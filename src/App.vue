@@ -196,7 +196,7 @@ export default {
     openEditModal(user) {
       this.form = {...user};
       this.editMode = true;
-      this.showModal();
+      this.$refs.modal.show();
 
     },
     updateUser() {
