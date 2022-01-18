@@ -8,13 +8,13 @@
     <div class="flex-grow">
       <div class="container mx-auto px-5 md:px-20 py-5">
         <div class="flex justify-center md:justify-end">
-          <button class="bg-blue-600 p-3 rounded-lg text-white" @click="showModal">Add User</button>
+          <button class="bg-blue-600 p-3 rounded-lg text-white w-full md:w-auto" @click="showModal">Add User</button>
         </div>
         <div class="my-5">
           <div class="flex flex-col">
             <div class="-my-2 overflow-x-auto sm:-mx-6 lg:-mx-8">
               <div class="py-2 align-middle inline-block min-w-full sm:px-6 lg:px-8">
-                <div class="shadow overflow-hidden border-b border-gray-200 sm:rounded-lg">
+                <div class="shadow overflow-hidden border-b border-gray-200 sm:rounded-lg hidden md:block">
                   <table class="min-w-full divide-y divide-gray-200">
                     <thead class="bg-gray-50">
                     <tr>
@@ -61,12 +61,41 @@
                       <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
                         {{ user.dob }}
                       </td>
-                      <td class="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
-                        <a href="#" class="text-indigo-600 hover:text-indigo-900">Edit</a>
+                      <td class="px-6 py-4 text-center">
+                        <button class="bg-red-500 rounded p-3 w-auto text-white mr-2" @click="deleteUser(user)"> Delete
+                        </button>
+                        <button class="bg-blue-500 rounded p-3 w-auto text-white" @click="openEditModal(user)">Edit
+                        </button>
                       </td>
                     </tr>
                     </tbody>
                   </table>
+                  <div v-if="users.length === 0" class="flex justify-center py-3 my-3">
+                      <p class="text-red-600 text-2xl font-semibold">No users Found   &#128557;</p>
+                  </div>
+                </div>
+                <div class="md:hidden">
+                  <div v-for="(user,index) in  users" :key="index" class="shadow-lg my-4 mx-3 p-3">
+                    <div class="my-2">
+                      <p><span>Name:</span> {{ user.name }}</p>
+                    </div>
+                    <div class="my-2">
+                      <p><span>Email:</span> {{ user.email }}</p>
+                    </div>
+                    <div class="my-2">
+                      <p><span>Gender:</span> {{ user.gender }}</p>
+                    </div>
+                    <div class="my-2">
+                      <p><span>DoB:</span> {{ user.dob }}</p>
+                    </div>
+                    <hr>
+                    <div class="flex justify-around py-2">
+                      <button class="bg-red-500 rounded p-3 w-full text-white mr-2" @click="deleteUser(user)">Delete
+                      </button>
+                      <button class="bg-blue-500 rounded p-3 w-full text-white" @click="openEditModal(user)">Edit
+                      </button>
+                    </div>
+                  </div>
                 </div>
               </div>
             </div>
@@ -74,7 +103,8 @@
         </div>
       </div>
     </div>
-    <t-modal name="my-modal" ref="modal" header="Add User" :clickToClose="false" :escToClose="false">
+    <t-modal name="my-modal" ref="modal" :header="editMode? 'Edit User' :  'Add User'" :clickToClose="false"
+             :escToClose="false">
       <div class="flex items-center bg-red-500 text-white text-sm font-bold px-4 py-3 rounded-lg" role="alert"
            v-show="showAlert">
         <svg class="fill-current w-4 h-4 mr-2" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20">
@@ -106,8 +136,11 @@
           <t-button @click="closeModal" type="button">
             Cancel
           </t-button>
-          <t-button @click="saveUser" type="button">
-            Ok
+          <t-button v-if="editMode" @click="updateUser" type="button">
+            Update User
+          </t-button>
+          <t-button v-else @click="saveUser" type="button">
+            Save User
           </t-button>
         </div>
       </template>
@@ -142,7 +175,8 @@ export default {
         dob: null,
       },
       users: [],
-      showAlert: false
+      showAlert: false,
+      editMode: false,
     }
   },
   methods: {
@@ -158,6 +192,49 @@ export default {
         this.showAlert = true;
       }
     },
+    openEditModal(user) {
+      this.form = {...user};
+      this.editMode = true;
+      this.showModal();
+
+    },
+    updateUser() {
+      if (this.form.name && this.form.email && this.form.gender && this.form.dob) {
+        let newUser = {...this.form};
+        this.users = this.users.map((user) => {
+          if (user.id === newUser.id) {
+            return newUser;
+          }
+          return user;
+        })
+        this.closeModal();
+      } else {
+        this.showAlert = true;
+      }
+    },
+    deleteUser(user) {
+      this.$swal.fire({
+        title: 'Are you sure?',
+        text: "You won't be able to revert this!",
+        icon: 'warning',
+        showCancelButton: true,
+        confirmButtonColor: '#3085d6',
+        cancelButtonColor: '#d33',
+        confirmButtonText: 'Yes, delete it!'
+      }).then((result) => {
+        if (result.isConfirmed) {
+
+          this.users = this.users.filter((usr) => usr.id !== user.id);
+
+          this.$swal.fire(
+              'Deleted!',
+              'Your file has been deleted.',
+              'success'
+          )
+        }
+      })
+
+    },
     closeModal() {
       this.$refs.modal.hide();
       this.form = {
@@ -167,7 +244,10 @@ export default {
         gender: '',
         dob: null
       }
-    }
+      this.showAlert = false;
+      this.editMode = false;
+    },
+
   }
 }
 </script>

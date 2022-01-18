@@ -13,6 +13,7 @@
     "postcss": "^7.0.39",
     "tailwindcss": "npm:@tailwindcss/postcss7-compat@^2.2.17",
     "vue": "^2.6.11",
+    "vue-sweetalert2": "^5.0.2",
     "vue-tailwind": "^2.5.0"
   },
   "devDependencies": {
