@@ -59,7 +59,7 @@
                           </span>
                       </td>
                       <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                        {{ user.dob }}
+                        {{ moment(user.dob).format('Do MMMM YYYY') }}
                       </td>
                       <td class="px-6 py-4 text-center">
                         <button class="bg-red-500 rounded p-3 w-auto text-white mr-2" @click="deleteUser(user)"> Delete
@@ -71,7 +71,7 @@
                     </tbody>
                   </table>
                   <div v-if="users.length === 0" class="flex justify-center py-3 my-3">
-                      <p class="text-red-600 text-2xl font-semibold">No users Found   &#128557;</p>
+                    <p class="text-red-600 text-2xl font-semibold">No users Found &#128557;</p>
                   </div>
                 </div>
                 <div class="md:hidden">
@@ -86,7 +86,7 @@
                       <p><span>Gender:</span> {{ user.gender }}</p>
                     </div>
                     <div class="my-2">
-                      <p><span>DoB:</span> {{ user.dob }}</p>
+                      <p><span>DoB:</span> {{ moment(user.dob).format('Do MMMM YYYY') }}</p>
                     </div>
                     <hr>
                     <div class="flex justify-around py-2">
@@ -181,6 +181,7 @@ export default {
   },
   methods: {
     showModal() {
+      this.resetForm();
       this.$refs.modal.show();
     },
     saveUser() {
@@ -237,6 +238,11 @@ export default {
     },
     closeModal() {
       this.$refs.modal.hide();
+      this.resetForm();
+      this.showAlert = false;
+      this.editMode = false;
+    },
+    resetForm() {
       this.form = {
         id: null,
         name: '',
@@ -244,9 +250,7 @@ export default {
         gender: '',
         dob: null
       }
-      this.showAlert = false;
-      this.editMode = false;
-    },
+    }
 
   }
 }
