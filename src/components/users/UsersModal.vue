@@ -84,12 +84,17 @@ export default {
 
     },
     saveUser() {
-      if (this.form.name && this.form.email && this.form.gender && this.form.dob) {
+      if (this.form.name && this.form.email && this.form.gender && this.form.dob && this.validateEmail(this.form.email)) {
         Event_bus.$emit('save_user', this.form);
         this.closeModal();
       } else {
         this.showAlert = true;
       }
+    },
+    validateEmail(email) {
+      return email.toLowerCase().match(
+          /^(([^<>()[\]\\.,;:\s@"]+(\.[^<>()[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/
+      );
     },
     updateUser() {
       if (this.form.name && this.form.email && this.form.gender && this.form.dob) {
